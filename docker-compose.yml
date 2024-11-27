@@ -33,6 +33,10 @@ services:
         environment:
             - DATABASE_URL=mongodb://mongo:27017/you_app
             - RABBITMQ_URL=amqp://rabbitmq
+            - JWT_SECRET=abela-a@youapp
+            - JWT_REFRESH_SECRET=abelardhana@youapp
+            - JWT_EXPIRATION=1h
+            - JWT_REFRESH_EXPIRATION=7d
         networks:
             - app-network
         develop:
