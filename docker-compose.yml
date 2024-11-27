@@ -11,6 +11,15 @@ services:
             - NEXT_PUBLIC_API_URL=http://localhost:4000
         networks:
             - app-network
+        develop:
+            watch:
+                - action: sync
+                  path: ./backend
+                  target: /app
+                  ignore:
+                      - node_modules/
+                - action: rebuild
+                  path: package.json
 
     backend:
         build:
@@ -26,6 +35,15 @@ services:
             - RABBITMQ_URL=amqp://rabbitmq
         networks:
             - app-network
+        develop:
+            watch:
+                - action: sync
+                  path: ./backend
+                  target: /app
+                  ignore:
+                      - node_modules/
+                - action: rebuild
+                  path: package.json
 
     mongo:
         image: mongo:latest
