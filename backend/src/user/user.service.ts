@@ -57,7 +57,7 @@ export class UserService {
     id: string,
     refreshToken: string | null,
   ): Promise<void> {
-    await this.userModel.findByIdAndUpdate(id, { refreshToken });
+    await this.userModel.findByIdAndUpdate(id, { refresh_token: refreshToken });
   }
 
   deleteUser(id: string) {

@@ -51,7 +51,7 @@ export class AuthService {
 
   async refresh(refreshTokenDto: RefreshTokenDto) {
     try {
-      const payload = this.jwtService.verify(refreshTokenDto.refreshToken, {
+      const payload = this.jwtService.verify(refreshTokenDto.refresh_token, {
         secret: process.env.JWT_REFRESH_SECRET,
       });
 
@@ -60,8 +60,8 @@ export class AuthService {
       if (!user) throw new NotFoundException('User not found');
 
       const tokenIsValid = await bcrypt.compare(
-        refreshTokenDto.refreshToken,
-        user.refreshToken,
+        refreshTokenDto.refresh_token,
+        user.refresh_token,
       );
 
       if (!tokenIsValid)

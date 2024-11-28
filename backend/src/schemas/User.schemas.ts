@@ -12,7 +12,7 @@ export class User {
   password: string;
 
   @Prop()
-  refreshToken: string;
+  refresh_token: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

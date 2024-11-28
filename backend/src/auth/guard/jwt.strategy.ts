@@ -21,7 +21,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const currentUser = this.userService.getUserById(payload.sub);
     if (!currentUser) throw new NotFoundException('User not found');
 
-    if ((await currentUser).refreshToken == null)
+    if ((await currentUser).refresh_token == null)
       throw new UnauthorizedException();
 
     return { userId: payload.sub, username: payload.username };
