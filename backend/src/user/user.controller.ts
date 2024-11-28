@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -14,8 +15,10 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/CreateUser.dto';
 import mongoose from 'mongoose';
 import { UpdateUserDto } from './dto/UpdateUser.dto';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 
 @Controller('users')
+@UseGuards(JwtAuthGuard)
 export class UserController {
   constructor(private userService: UserService) {}
 
