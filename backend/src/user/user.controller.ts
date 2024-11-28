@@ -16,7 +16,7 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/CreateUser.dto';
 import mongoose from 'mongoose';
 import { UpdateUserDto } from './dto/UpdateUser.dto';
-import { JwtAuthGuard } from '../auth/jwt.guard';
+import { JwtAuthGuard } from '../auth/guard/jwt.guard';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard)
@@ -26,13 +26,18 @@ export class UserController {
   @Post()
   @UsePipes(new ValidationPipe())
   createUser(@Body() createUserDto: CreateUserDto) {
-    const existingUser = this.userService.getUserByUsernameOrEmail(
+    const existingUsername = this.userService.getUserByUsernameOrEmail(
       createUserDto.username,
+    );
+
+    if (existingUsername)
+      throw new BadRequestException('Username already exists');
+
+    const existingEmail = this.userService.getUserByUsernameOrEmail(
       createUserDto.email,
     );
 
-    if (existingUser)
-      throw new BadRequestException('Username or email already exists');
+    if (existingEmail) throw new BadRequestException('Email already exists');
 
     return this.userService.createUser(createUserDto);
   }

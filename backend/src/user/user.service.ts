@@ -28,9 +28,9 @@ export class UserService {
     return this.userModel.findById(id);
   }
 
-  getUserByUsernameOrEmail(username: string, email: string) {
+  getUserByUsernameOrEmail(identifier: string) {
     return this.userModel.findOne({
-      $or: [{ username }, { email }],
+      $or: [{ username: identifier }, { email: identifier }],
     });
   }
 
