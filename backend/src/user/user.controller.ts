@@ -26,19 +26,6 @@ export class UserController {
   @Post()
   @UsePipes(new ValidationPipe())
   createUser(@Body() createUserDto: CreateUserDto) {
-    const existingUsername = this.userService.getUserByUsernameOrEmail(
-      createUserDto.username,
-    );
-
-    if (existingUsername)
-      throw new BadRequestException('Username already exists');
-
-    const existingEmail = this.userService.getUserByUsernameOrEmail(
-      createUserDto.email,
-    );
-
-    if (existingEmail) throw new BadRequestException('Email already exists');
-
     return this.userService.createUser(createUserDto);
   }
 
