@@ -35,8 +35,8 @@ services:
             - RABBITMQ_URL=amqp://rabbitmq
             - JWT_SECRET=abela-a@youapp
             - JWT_REFRESH_SECRET=abelardhana@youapp
-            - JWT_EXPIRATION=1h
-            - JWT_REFRESH_EXPIRATION=7d
+            - JWT_EXPIRATION=15m
+            - JWT_REFRESH_EXPIRATION=1d
         networks:
             - app-network
         develop:
