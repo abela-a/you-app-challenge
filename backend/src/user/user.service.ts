@@ -28,12 +28,20 @@ export class UserService {
     return this.userModel.findById(id);
   }
 
-  getUserByEmail(email: string) {
-    return this.userModel.findOne({ email });
+  getUserByUsernameOrEmail(username: string, email: string) {
+    return this.userModel.findOne({
+      $or: [{ username }, { email }],
+    });
   }
 
-  updateUser(id: string, updateUserDto: UpdateUserDto) {
-    return this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true });
+  async updateUser(id: string, updateUserDto: UpdateUserDto) {
+    const hashedPassword = await bcrypt.hash(updateUserDto.password, 10);
+
+    return this.userModel.findByIdAndUpdate(
+      id,
+      { ...updateUserDto, password: hashedPassword },
+      { new: true },
+    );
   }
 
   async updateRefreshToken(

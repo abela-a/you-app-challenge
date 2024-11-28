@@ -1,9 +1,10 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
-  HttpException,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -25,6 +26,14 @@ export class UserController {
   @Post()
   @UsePipes(new ValidationPipe())
   createUser(@Body() createUserDto: CreateUserDto) {
+    const existingUser = this.userService.getUserByUsernameOrEmail(
+      createUserDto.username,
+      createUserDto.email,
+    );
+
+    if (existingUser)
+      throw new BadRequestException('Username or email already exists');
+
     return this.userService.createUser(createUserDto);
   }
 
@@ -36,10 +45,10 @@ export class UserController {
   @Get(':id')
   getUserById(@Param('id') id: string) {
     const isValidId = mongoose.Types.ObjectId.isValid(id);
-    if (!isValidId) throw new HttpException('User not found', 400);
+    if (!isValidId) throw new BadRequestException('Invalid ID');
 
     const findUser = this.userService.getUserById(id);
-    if (!findUser) throw new HttpException('User not found', 404);
+    if (!findUser) throw new NotFoundException('User not found');
 
     return findUser;
   }
@@ -48,10 +57,10 @@ export class UserController {
   @UsePipes(new ValidationPipe())
   updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     const isValidId = mongoose.Types.ObjectId.isValid(id);
-    if (!isValidId) throw new HttpException('User not found', 400);
+    if (!isValidId) throw new BadRequestException('Invalid ID');
 
     const findUser = this.userService.getUserById(id);
-    if (!findUser) throw new HttpException('User not found', 404);
+    if (!findUser) throw new NotFoundException('User not found');
 
     return this.userService.updateUser(id, updateUserDto);
   }
@@ -59,10 +68,10 @@ export class UserController {
   @Delete(':id')
   deleteUser(@Param('id') id: string) {
     const isValidId = mongoose.Types.ObjectId.isValid(id);
-    if (!isValidId) throw new HttpException('User not found', 400);
+    if (!isValidId) throw new BadRequestException('Invalid ID');
 
     const findUser = this.userService.getUserById(id);
-    if (!findUser) throw new HttpException('User not found', 404);
+    if (!findUser) throw new NotFoundException('User not found');
 
     this.userService.deleteUser(id);
     return;
