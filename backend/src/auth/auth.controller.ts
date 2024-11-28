@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Request, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Request,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/Register.dto';
 import { RefreshTokenDto } from './dto/RefreshToken.dto';
@@ -10,18 +18,21 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('register')
+  @UsePipes(new ValidationPipe())
   async register(@Body() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
   }
 
   @Post('login')
+  @UsePipes(new ValidationPipe())
   async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
 
   @Post('refresh')
+  @UsePipes(new ValidationPipe())
   async refresh(@Body() refreshTokenDto: RefreshTokenDto) {
-    return this.authService.refresh(refreshTokenDto.refreshToken);
+    return this.authService.refresh(refreshTokenDto);
   }
 
   @Post('logout')

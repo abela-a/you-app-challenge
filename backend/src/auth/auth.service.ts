@@ -8,6 +8,7 @@ import * as bcrypt from 'bcrypt';
 import { UserService } from '../user/user.service';
 import { LoginDto } from './dto/Login.dto';
 import { RegisterDto } from './dto/Register.dto';
+import { RefreshTokenDto } from './dto/RefreshToken.dto';
 
 @Injectable()
 export class AuthService {
@@ -48,9 +49,9 @@ export class AuthService {
     };
   }
 
-  async refresh(refreshToken: string) {
+  async refresh(refreshTokenDto: RefreshTokenDto) {
     try {
-      const payload = this.jwtService.verify(refreshToken, {
+      const payload = this.jwtService.verify(refreshTokenDto.refreshToken, {
         secret: process.env.JWT_REFRESH_SECRET,
       });
 
@@ -59,14 +60,30 @@ export class AuthService {
       if (!user) throw new NotFoundException('User not found');
 
       const tokenIsValid = await bcrypt.compare(
-        refreshToken,
+        refreshTokenDto.refreshToken,
         user.refreshToken,
       );
 
       if (!tokenIsValid)
         throw new UnauthorizedException('Invalid refresh token');
 
-      return this.login({ identifier: user.email, password: user.password });
+      const newPayload = { username: user.username, sub: user._id };
+      const newAccessToken = this.jwtService.sign(newPayload);
+      const newRefreshToken = this.jwtService.sign(newPayload, {
+        secret: process.env.JWT_REFRESH_SECRET,
+        expiresIn: process.env.JWT_REFRESH_EXPIRATION,
+      });
+
+      const hashedNewRefreshToken = await bcrypt.hash(newRefreshToken, 10);
+      await this.userService.updateRefreshToken(
+        user._id.toString(),
+        hashedNewRefreshToken,
+      );
+
+      return {
+        access_token: newAccessToken,
+        refresh_token: newRefreshToken,
+      };
     } catch {
       throw new UnauthorizedException('Invalid refresh token');
     }
