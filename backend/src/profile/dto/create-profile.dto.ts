@@ -7,7 +7,7 @@ import {
   IsOptional,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Gender } from '../../enums/gender.enum';
+import { Gender } from '../../app/enums/gender.enum';
 import { Transform, Type } from 'class-transformer';
 
 export class CreateProfileDto {

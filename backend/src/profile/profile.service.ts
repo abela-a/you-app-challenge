@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
-import { Profile, ProfileDocument } from '../schemas/profile.schemas';
+import { Profile, ProfileDocument } from '../app/schemas/profile.schemas';
 import * as fs from 'fs';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
