@@ -5,14 +5,6 @@ export class HoroscopeDto {
   @IsString()
   @ApiProperty({
     required: true,
-    example: 'aries',
-    description: 'The code of the horoscope',
-  })
-  readonly code: string;
-
-  @IsString()
-  @ApiProperty({
-    required: true,
     example: 'Aries',
     description: 'The name of the horoscope',
   })
