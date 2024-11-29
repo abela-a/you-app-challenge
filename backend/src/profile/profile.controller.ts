@@ -3,66 +3,97 @@ import {
   Get,
   Post,
   Put,
-  Param,
   Body,
   UseInterceptors,
   UploadedFile,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiConsumes, ApiOperation, ApiSecurity } from '@nestjs/swagger';
 import { Express } from 'express';
 
-import { FileUploadInterceptor } from '../interceptors/file-upload.interceptor';
 import { ProfileService } from './profile.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
-
+import { JwtAuthGuard } from '../auth/guard/jwt.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  multerPhotosConfig,
+  multerPhotosOptions,
+} from '../config/multer-photo.config';
 @Controller('profiles')
+@UseGuards(JwtAuthGuard)
+@ApiSecurity('bearer')
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
-  @Get(':userId')
-  @ApiOperation({ summary: 'Get profile by user ID' })
-  @ApiResponse({ status: 200, description: 'Profile found' })
-  @ApiResponse({ status: 404, description: 'Profile not found' })
-  async getProfileByUserId(@Param('user_id') userId: string) {
-    return this.profileService.getProfileByUserId(userId);
-  }
-
-  @Get('id/:id')
-  @ApiOperation({ summary: 'Get profile by ID' })
-  @ApiResponse({ status: 200, description: 'Profile found' })
-  @ApiResponse({ status: 404, description: 'Profile not found' })
-  async getProfileById(@Param('id') id: string) {
-    return this.profileService.getProfileById(id);
-  }
-
   @Post()
-  @UseInterceptors(FileUploadInterceptor)
-  @ApiOperation({ summary: 'Create profile' })
-  @ApiResponse({ status: 201, description: 'Profile created' })
+  @UseInterceptors(FileInterceptor('photo', multerPhotosOptions))
+  @ApiOperation({
+    summary: 'Create profile',
+    description: 'Create a new profile for user',
+    responses: {
+      201: { description: 'Profile created' },
+      400: { description: 'Bad request' },
+      401: { description: 'Unauthorized' },
+    },
+  })
+  @ApiConsumes('multipart/form-data')
   async createProfile(
+    @Request() request,
     @Body() createProfileDto: CreateProfileDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
+    const userId = request.user.userId;
+
     if (file) {
-      createProfileDto.photo = file.filename;
+      const dest = multerPhotosConfig.dest.replace('./', '');
+      createProfileDto.photo = `${dest}/${file.filename}`;
     }
-    return this.profileService.createProfile(createProfileDto);
+
+    return this.profileService.createProfile(userId, createProfileDto);
   }
 
-  @Put(':id')
-  @UseInterceptors(FileUploadInterceptor)
-  @ApiOperation({ summary: 'Update profile' })
-  @ApiResponse({ status: 200, description: 'Profile updated' })
-  @ApiResponse({ status: 404, description: 'Profile not found' })
+  @Get()
+  @ApiOperation({
+    summary: 'Get profile by user ID',
+    description: 'Get user profile by user ID',
+    responses: {
+      200: { description: 'Profile found' },
+      404: { description: 'Profile not found. Try creating one' },
+    },
+  })
+  async getProfileByUserId(@Request() request) {
+    const userId = request.user.userId;
+
+    return this.profileService.getProfileByUserId(userId);
+  }
+
+  @Put()
+  @UseInterceptors(FileInterceptor('photo', multerPhotosOptions))
+  @ApiOperation({
+    summary: 'Update profile',
+    description: 'Update user profile by ID',
+    responses: {
+      200: { description: 'Profile updated' },
+      400: { description: 'Bad request' },
+      401: { description: 'Unauthorized' },
+      404: { description: 'Profile not found. Try creating one' },
+    },
+  })
+  @ApiConsumes('multipart/form-data')
   async updateProfile(
-    @Param('id') id: string,
+    @Request() request,
     @Body() updateProfileDto: UpdateProfileDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
+    const userId = request.user.userId;
+
     if (file) {
-      updateProfileDto.photo = file.filename;
+      const dest = multerPhotosConfig.dest.replace('./', '');
+      updateProfileDto.photo = `${dest}/${file.filename}`;
     }
-    return this.profileService.updateProfile(id, updateProfileDto);
+
+    return this.profileService.updateProfileByUserId(userId, updateProfileDto);
   }
 }

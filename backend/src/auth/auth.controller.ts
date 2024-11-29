@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Request,
-  UseGuards,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Controller, Post, Body, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { JwtAuthGuard } from './guard/jwt.guard';
@@ -19,7 +11,6 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('register')
-  @UsePipes(new ValidationPipe())
   @ApiOperation({
     summary: 'Register',
     description: 'Register a new user',
@@ -33,7 +24,6 @@ export class AuthController {
   }
 
   @Post('login')
-  @UsePipes(new ValidationPipe())
   @ApiOperation({
     summary: 'Login',
     description: 'Login a user',
@@ -47,7 +37,6 @@ export class AuthController {
   }
 
   @Post('refresh')
-  @UsePipes(new ValidationPipe())
   @ApiOperation({
     summary: 'Refresh Access Token',
     description: 'Refresh the access token using the refresh token',

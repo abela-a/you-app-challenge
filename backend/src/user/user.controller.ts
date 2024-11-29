@@ -23,7 +23,6 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Post()
-  @UsePipes(new ValidationPipe())
   @ApiOperation({
     summary: 'Create User',
     description: 'Create a new user with the data provided',
@@ -65,7 +64,6 @@ export class UserController {
   }
 
   @Put(':id')
-  @UsePipes(new ValidationPipe())
   @ApiOperation({
     summary: 'Update User',
     description: 'Update a user by their ID',

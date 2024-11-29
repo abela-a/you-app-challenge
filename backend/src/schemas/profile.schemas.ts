@@ -6,7 +6,7 @@ export type ProfileDocument = Profile & Document;
 
 @Schema()
 export class Profile {
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   user_id: string;
 
   @Prop({ required: true })
