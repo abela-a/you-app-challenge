@@ -1,16 +1,21 @@
 import * as bcrypt from 'bcrypt';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from '../schemas/User.schemas';
-import { Model } from 'mongoose';
-import { CreateUserDto } from './dto/CreateUser.dto';
-import { UpdateUserDto } from './dto/UpdateUser.dto';
+import mongoose, { Model } from 'mongoose';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { RegisterDto } from '../auth/dto/register.dto';
 
 @Injectable()
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-  async createUser(createUserDto: CreateUserDto) {
+  async createUser(createUserDto: CreateUserDto | RegisterDto) {
     const userExists = await this.userModel.findOne({
       $or: [
         { username: createUserDto.username },
@@ -26,27 +31,36 @@ export class UserService {
       password: hashedPassword,
     });
 
-    return user.save();
+    return await user.save();
   }
 
-  getUsers() {
-    return this.userModel.find();
+  async getUsers() {
+    return await this.userModel.find();
   }
 
-  getUserById(id: string) {
-    return this.userModel.findById(id);
+  async getUserById(id: string) {
+    const isValidId = mongoose.Types.ObjectId.isValid(id);
+    if (!isValidId) throw new BadRequestException('Invalid ID');
+
+    const user = await this.userModel.findById(id);
+    if (!user) throw new NotFoundException('User not found');
+
+    return user;
   }
 
-  getUserByUsernameOrEmail(identifier: string) {
-    return this.userModel.findOne({
-      $or: [{ username: identifier }, { email: identifier }],
-    });
+  async getUserByUsernameOrEmail(identifier: string) {
+    const filter = { $or: [{ username: identifier }, { email: identifier }] };
+    const user = await this.userModel.findOne(filter);
+
+    if (!user) throw new NotFoundException('User not found');
+
+    return user;
   }
 
   async updateUser(id: string, updateUserDto: UpdateUserDto) {
     const hashedPassword = await bcrypt.hash(updateUserDto.password, 10);
 
-    return this.userModel.findByIdAndUpdate(
+    return await this.userModel.findByIdAndUpdate(
       id,
       { ...updateUserDto, password: hashedPassword },
       { new: true },
@@ -60,7 +74,7 @@ export class UserService {
     await this.userModel.findByIdAndUpdate(id, { refresh_token: refreshToken });
   }
 
-  deleteUser(id: string) {
-    return this.userModel.findByIdAndDelete(id);
+  async deleteUser(id: string) {
+    return await this.userModel.findByIdAndDelete(id);
   }
 }

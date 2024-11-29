@@ -1,10 +1,8 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
-  NotFoundException,
   Param,
   Post,
   Put,
@@ -13,11 +11,10 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/CreateUser.dto';
-import mongoose from 'mongoose';
-import { UpdateUserDto } from './dto/UpdateUser.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/guard/jwt.guard';
-import { ApiResponse, ApiSecurity } from '@nestjs/swagger';
+import { ApiOperation, ApiSecurity } from '@nestjs/swagger';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard)
@@ -27,78 +24,82 @@ export class UserController {
 
   @Post()
   @UsePipes(new ValidationPipe())
-  @ApiResponse({
-    status: 201,
-    description: 'The user has been successfully created',
+  @ApiOperation({
+    summary: 'Create User',
+    description: 'Create a new user with the data provided',
+    responses: {
+      201: { description: 'The user has been successfully created' },
+      401: { description: 'Unauthorized' },
+    },
   })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  createUser(@Body() createUserDto: CreateUserDto) {
-    return this.userService.createUser(createUserDto);
+  async createUser(@Body() createUserDto: CreateUserDto) {
+    return await this.userService.createUser(createUserDto);
   }
 
   @Get()
-  @ApiResponse({
-    status: 200,
-    description: 'The list of all users',
+  @ApiOperation({
+    summary: 'Get Users',
+    description: 'Get all users',
+    responses: {
+      200: { description: 'The users have been successfully found' },
+      401: { description: 'Unauthorized' },
+    },
   })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  getUsers() {
-    return this.userService.getUsers();
+  async getUsers() {
+    return await this.userService.getUsers();
   }
 
   @Get(':id')
-  @ApiResponse({
-    status: 200,
-    description: 'The user has been successfully found',
+  @ApiOperation({
+    summary: 'Get User by ID',
+    description: 'Get a user by their ID',
+    responses: {
+      200: { description: 'The user has been successfully found' },
+      400: { description: 'Invalid ID' },
+      401: { description: 'Unauthorized' },
+      404: { description: 'User not found' },
+    },
   })
-  @ApiResponse({ status: 400, description: 'Invalid ID' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 404, description: 'User not found' })
-  getUserById(@Param('id') id: string) {
-    const isValidId = mongoose.Types.ObjectId.isValid(id);
-    if (!isValidId) throw new BadRequestException('Invalid ID');
-
-    const findUser = this.userService.getUserById(id);
-    if (!findUser) throw new NotFoundException('User not found');
-
-    return findUser;
+  async getUserById(@Param('id') id: string) {
+    return await this.userService.getUserById(id);
   }
 
   @Put(':id')
   @UsePipes(new ValidationPipe())
-  @ApiResponse({
-    status: 200,
-    description: 'The user has been successfully updated',
+  @ApiOperation({
+    summary: 'Update User',
+    description: 'Update a user by their ID',
+    responses: {
+      200: { description: 'The user has been successfully updated' },
+      400: { description: 'Invalid ID' },
+      401: { description: 'Unauthorized' },
+      404: { description: 'User not found' },
+    },
   })
-  @ApiResponse({ status: 400, description: 'Invalid ID' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 404, description: 'User not found' })
-  updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    const isValidId = mongoose.Types.ObjectId.isValid(id);
-    if (!isValidId) throw new BadRequestException('Invalid ID');
+  async updateUser(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    await this.userService.getUserById(id);
 
-    const findUser = this.userService.getUserById(id);
-    if (!findUser) throw new NotFoundException('User not found');
-
-    return this.userService.updateUser(id, updateUserDto);
+    return await this.userService.updateUser(id, updateUserDto);
   }
 
   @Delete(':id')
-  @ApiResponse({
-    status: 200,
-    description: 'The user has been successfully deleted',
+  @ApiOperation({
+    summary: 'Delete User',
+    description: 'Delete a user by their ID',
+    responses: {
+      200: { description: 'The user has been successfully deleted' },
+      400: { description: 'Invalid ID' },
+      401: { description: 'Unauthorized' },
+      404: { description: 'User not found' },
+    },
   })
-  @ApiResponse({ status: 400, description: 'Invalid ID' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 404, description: 'User not found' })
-  deleteUser(@Param('id') id: string) {
-    const isValidId = mongoose.Types.ObjectId.isValid(id);
-    if (!isValidId) throw new BadRequestException('Invalid ID');
+  async deleteUser(@Param('id') id: string) {
+    await this.userService.getUserById(id);
+    await this.userService.deleteUser(id);
 
-    const findUser = this.userService.getUserById(id);
-    if (!findUser) throw new NotFoundException('User not found');
-
-    this.userService.deleteUser(id);
     return;
   }
 }
