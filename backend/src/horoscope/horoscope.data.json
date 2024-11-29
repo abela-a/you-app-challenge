@@ -2,15 +2,85 @@
   {
     "code": "AR",
     "name": "Aries",
-    "name_alt": "The Ram",
+    "name_alt": "Ram",
     "start_date": "03-21",
     "end_date": "04-19"
   },
   {
     "code": "TA",
     "name": "Taurus",
-    "name_alt": "The Bull",
+    "name_alt": "Bull",
     "start_date": "04-20",
     "end_date": "05-20"
+  },
+  {
+    "code": "GE",
+    "name": "Gemini",
+    "name_alt": "Twins",
+    "start_date": "05-21",
+    "end_date": "06-20"
+  },
+  {
+    "code": "CA",
+    "name": "Cancer",
+    "name_alt": "Crab",
+    "start_date": "06-21",
+    "end_date": "07-22"
+  },
+  {
+    "code": "LE",
+    "name": "Leo",
+    "name_alt": "Lion",
+    "start_date": "07-23",
+    "end_date": "08-22"
+  },
+  {
+    "code": "VI",
+    "name": "Virgo",
+    "name_alt": "Virgin",
+    "start_date": "08-23",
+    "end_date": "09-22"
+  },
+  {
+    "code": "LI",
+    "name": "Libra",
+    "name_alt": "Balance",
+    "start_date": "09-23",
+    "end_date": "10-22"
+  },
+  {
+    "code": "SC",
+    "name": "Scorpio",
+    "name_alt": "Scorpion",
+    "start_date": "10-23",
+    "end_date": "11-21"
+  },
+  {
+    "code": "SA",
+    "name": "Sagittarius",
+    "name_alt": "Archer",
+    "start_date": "11-22",
+    "end_date": "12-21"
+  },
+  {
+    "code": "CP",
+    "name": "Capricorn",
+    "name_alt": "Goat",
+    "start_date": "12-22",
+    "end_date": "01-19"
+  },
+  {
+    "code": "AQ",
+    "name": "Aquarius",
+    "name_alt": "Water Bearer",
+    "start_date": "01-20",
+    "end_date": "02-18"
+  },
+  {
+    "code": "PI",
+    "name": "Pisces",
+    "name_alt": "Fish",
+    "start_date": "02-19",
+    "end_date": "03-20"
   }
 ]
