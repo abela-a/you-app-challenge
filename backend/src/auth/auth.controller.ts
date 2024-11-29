@@ -8,11 +8,11 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterDto } from './dto/register.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guard/jwt.guard';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiSecurity } from '@nestjs/swagger';
+import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -21,7 +21,8 @@ export class AuthController {
   @Post('register')
   @UsePipes(new ValidationPipe())
   @ApiOperation({
-    summary: 'Register a new user',
+    summary: 'Register',
+    description: 'Register a new user',
     responses: {
       201: { description: 'User successfully registered' },
       400: { description: 'Bad Request' },
@@ -34,7 +35,8 @@ export class AuthController {
   @Post('login')
   @UsePipes(new ValidationPipe())
   @ApiOperation({
-    summary: 'Login a user',
+    summary: 'Login',
+    description: 'Login a user',
     responses: {
       200: { description: 'User successfully logged in' },
       400: { description: 'Bad Request' },
@@ -47,7 +49,8 @@ export class AuthController {
   @Post('refresh')
   @UsePipes(new ValidationPipe())
   @ApiOperation({
-    summary: 'Refresh access token',
+    summary: 'Refresh Access Token',
+    description: 'Refresh the access token using the refresh token',
     responses: {
       200: { description: 'Token successfully refreshed' },
       400: { description: 'Bad Request' },
@@ -61,14 +64,15 @@ export class AuthController {
   @Post('logout')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({
-    summary: 'Logout a user',
+    summary: 'Logout',
+    description: 'Logout a user',
     responses: {
-      200: { description: 'User successfully logged out' },
+      201: { description: 'User successfully logged out' },
       400: { description: 'Bad Request' },
       401: { description: 'Unauthorized' },
     },
-    security: [{ bearerAuth: [] }],
   })
+  @ApiSecurity('bearer')
   async logout(@Request() request) {
     return this.authService.logout(request.user.userId);
   }
