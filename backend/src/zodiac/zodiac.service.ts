@@ -34,4 +34,14 @@ export class ZodiacService {
         new Date(zodiac.end_date) <= end,
     );
   }
+
+  getZodiacByDate(date: string): ZodiacDto[] {
+    const targetDate = new Date(date);
+
+    return this.zodiacs.filter(
+      (zodiac) =>
+        new Date(zodiac.start_date) <= targetDate &&
+        new Date(zodiac.end_date) >= targetDate,
+    );
+  }
 }

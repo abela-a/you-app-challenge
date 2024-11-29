@@ -9,11 +9,15 @@ import { Profile, ProfileDocument } from '../app/schemas/profile.schemas';
 import * as fs from 'fs';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { ZodiacService } from '../zodiac/zodiac.service';
+import { HoroscopeService } from '../horoscope/horoscope.service';
 
 @Injectable()
 export class ProfileService {
   constructor(
     @InjectModel(Profile.name) private profileModel: Model<ProfileDocument>,
+    private readonly zodiacService: ZodiacService,
+    private readonly horoscopeService: HoroscopeService,
   ) {}
 
   async getProfileByUserId(userId: string): Promise<Profile> {
@@ -38,6 +42,24 @@ export class ProfileService {
     return profile;
   }
 
+  private setZodiacAndHoroscope(
+    profileDto: CreateProfileDto | UpdateProfileDto,
+  ): void {
+    if (!profileDto.zodiac) {
+      const zodiac = this.zodiacService.getZodiacByDate(
+        profileDto.birthday.toISOString(),
+      );
+      profileDto.zodiac = zodiac[0].name;
+    }
+
+    if (!profileDto.horoscope) {
+      const horoscope = this.horoscopeService.getHoroscopeByDate(
+        profileDto.birthday.toISOString(),
+      );
+      profileDto.horoscope = horoscope.name;
+    }
+  }
+
   async createProfile(
     userId: string,
     createProfileDto: CreateProfileDto,
@@ -48,6 +70,7 @@ export class ProfileService {
       throw new BadRequestException('Profile already exists for this user');
 
     createProfileDto.user = userId;
+    this.setZodiacAndHoroscope(createProfileDto);
 
     const createdProfile = new this.profileModel(createProfileDto);
 
@@ -67,9 +90,10 @@ export class ProfileService {
     }
 
     updateProfileDto.user = userId;
+    this.setZodiacAndHoroscope(updateProfileDto);
 
     const updatedProfile = await this.profileModel.findOneAndUpdate(
-      { user_id: userId },
+      { user: userId },
       updateProfileDto,
       { new: true },
     );
