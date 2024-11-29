@@ -1,13 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 import { Gender } from '../enums/gender.enum';
+import { User } from './user.schemas';
 
 export type ProfileDocument = Profile & Document;
 
 @Schema()
 export class Profile {
-  @Prop({ required: true, unique: true })
-  user_id: string;
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true, unique: true })
+  user: User;
 
   @Prop({ required: true })
   name: string;

@@ -20,7 +20,7 @@ export class ProfileService {
     const isValidId = mongoose.Types.ObjectId.isValid(userId);
     if (!isValidId) throw new BadRequestException('Invalid ID');
 
-    const profile = await this.profileModel.findOne({ user_id: userId });
+    const profile = await this.profileModel.findOne({ user: userId });
     if (!profile)
       throw new NotFoundException('Profile not found. Try creating one.');
 
@@ -42,12 +42,12 @@ export class ProfileService {
     userId: string,
     createProfileDto: CreateProfileDto,
   ): Promise<Profile> {
-    const profile = await this.profileModel.findOne({ user_id: userId });
+    const profile = await this.profileModel.findOne({ user: userId });
 
     if (profile)
       throw new BadRequestException('Profile already exists for this user');
 
-    createProfileDto.user_id = userId;
+    createProfileDto.user = userId;
 
     const createdProfile = new this.profileModel(createProfileDto);
 
@@ -66,7 +66,7 @@ export class ProfileService {
       } catch {}
     }
 
-    updateProfileDto.user_id = userId;
+    updateProfileDto.user = userId;
 
     const updatedProfile = await this.profileModel.findOneAndUpdate(
       { user_id: userId },

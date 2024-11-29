@@ -19,7 +19,7 @@ export class CreateProfileDto {
     description: 'The user ID of the profile. Auto-generated from the token',
     nullable: true,
   })
-  user_id?: string;
+  user?: string;
 
   @IsString()
   @ApiProperty({
