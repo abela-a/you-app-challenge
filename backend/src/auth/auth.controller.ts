@@ -8,12 +8,11 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterDto } from './dto/Register.dto';
-import { RefreshTokenDto } from './dto/RefreshToken.dto';
-import { LoginDto } from './dto/Login.dto';
+import { RegisterDto } from './dto/register.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guard/jwt.guard';
-import { ApiSecurity } from '@nestjs/swagger';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiOperation } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -21,33 +20,55 @@ export class AuthController {
 
   @Post('register')
   @UsePipes(new ValidationPipe())
-  @ApiResponse({ status: 201, description: 'User successfully registered' })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiOperation({
+    summary: 'Register a new user',
+    responses: {
+      201: { description: 'User successfully registered' },
+      400: { description: 'Bad Request' },
+    },
+  })
   async register(@Body() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
   }
 
   @Post('login')
   @UsePipes(new ValidationPipe())
-  @ApiResponse({ status: 200, description: 'User successfully logged in' })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiOperation({
+    summary: 'Login a user',
+    responses: {
+      200: { description: 'User successfully logged in' },
+      400: { description: 'Bad Request' },
+    },
+  })
   async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
 
   @Post('refresh')
   @UsePipes(new ValidationPipe())
-  @ApiResponse({ status: 200, description: 'Token successfully refreshed' })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiOperation({
+    summary: 'Refresh access token',
+    responses: {
+      200: { description: 'Token successfully refreshed' },
+      400: { description: 'Bad Request' },
+      401: { description: 'Invalid refresh token' },
+    },
+  })
   async refresh(@Body() refreshTokenDto: RefreshTokenDto) {
     return this.authService.refresh(refreshTokenDto);
   }
 
   @Post('logout')
   @UseGuards(JwtAuthGuard)
-  @ApiSecurity('bearer')
-  @ApiResponse({ status: 200, description: 'User successfully logged out' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiOperation({
+    summary: 'Logout a user',
+    responses: {
+      200: { description: 'User successfully logged out' },
+      400: { description: 'Bad Request' },
+      401: { description: 'Unauthorized' },
+    },
+    security: [{ bearerAuth: [] }],
+  })
   async logout(@Request() request) {
     return this.authService.logout(request.user.userId);
   }
