@@ -13,6 +13,12 @@ export class User {
 
   @Prop()
   refresh_token: string;
+
+  @Prop({ default: false })
+  is_online: boolean;
+
+  @Prop({ default: new Date() })
+  last_seen: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

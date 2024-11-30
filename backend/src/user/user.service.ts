@@ -74,6 +74,14 @@ export class UserService {
     await this.userModel.findByIdAndUpdate(id, { refresh_token: refreshToken });
   }
 
+  async updateLastSeen(userId: string) {
+    return this.userModel.findByIdAndUpdate(userId, { last_seen: new Date() });
+  }
+
+  async updateOnlineStatus(userId: string, isOnline: boolean) {
+    return this.userModel.findByIdAndUpdate(userId, { is_online: isOnline });
+  }
+
   async deleteUser(id: string) {
     return await this.userModel.findByIdAndDelete(id);
   }
