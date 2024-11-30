@@ -27,6 +27,7 @@ services:
             dockerfile: Dockerfile
         ports:
             - "4000:4000"
+            - "4001:4001"
         depends_on:
             - mongo
             - rabbitmq
@@ -37,6 +38,7 @@ services:
             - JWT_REFRESH_SECRET=abelardhana@youapp
             - JWT_EXPIRATION=15m
             - JWT_REFRESH_EXPIRATION=1d
+            - SOCKET_PORT=4001
         networks:
             - app-network
         develop:
