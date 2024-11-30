@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
 import { HoroscopeModule } from './horoscope/horoscope.module';
 import { ZodiacModule } from './zodiac/zodiac.module';
+import { MessageModule } from './message/message.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ZodiacModule } from './zodiac/zodiac.module';
     ProfileModule,
     HoroscopeModule,
     ZodiacModule,
+    MessageModule,
   ],
   controllers: [],
   providers: [],
