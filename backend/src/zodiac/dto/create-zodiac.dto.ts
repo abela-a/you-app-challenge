@@ -1,7 +1,8 @@
-import { IsString } from 'class-validator';
+import { IsDate, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 
-export class ZodiacDto {
+export class CreateZodiacDto {
   @IsString()
   @ApiProperty({
     required: true,
@@ -10,15 +11,17 @@ export class ZodiacDto {
   })
   readonly name: string;
 
-  @IsString()
+  @IsDate()
+  @Transform(({ value }) => new Date(value))
   @ApiProperty({
     required: true,
     example: '2012-01-23',
     description: 'The start date of the zodiac',
   })
-  readonly start_date: string; // Format: MM-DD
+  readonly start_date: string;
 
-  @IsString()
+  @IsDate()
+  @Transform(({ value }) => new Date(value))
   @ApiProperty({
     required: true,
     example: '2013-02-09',

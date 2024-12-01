@@ -42,14 +42,14 @@ export class ProfileService {
     return profile;
   }
 
-  private setZodiacAndHoroscope(
+  private async setZodiacAndHoroscope(
     profileDto: CreateProfileDto | UpdateProfileDto,
-  ): void {
+  ): Promise<void> {
     if (!profileDto.zodiac) {
-      const zodiac = this.zodiacService.getZodiacByDate(
+      const zodiac = await this.zodiacService.getZodiacByDate(
         profileDto.birthday.toISOString(),
       );
-      profileDto.zodiac = zodiac[0].name;
+      profileDto.zodiac = zodiac.name;
     }
 
     if (!profileDto.horoscope) {
@@ -70,7 +70,7 @@ export class ProfileService {
       throw new BadRequestException('Profile already exists for this user');
 
     createProfileDto.user = userId;
-    this.setZodiacAndHoroscope(createProfileDto);
+    await this.setZodiacAndHoroscope(createProfileDto);
 
     const createdProfile = new this.profileModel(createProfileDto);
 
@@ -90,7 +90,7 @@ export class ProfileService {
     }
 
     updateProfileDto.user = userId;
-    this.setZodiacAndHoroscope(updateProfileDto);
+    await this.setZodiacAndHoroscope(updateProfileDto);
 
     const updatedProfile = await this.profileModel.findOneAndUpdate(
       { user: userId },
