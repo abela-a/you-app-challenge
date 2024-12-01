@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ZodiacService } from './zodiac.service';
 import { ZodiacController } from './zodiac.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Zodiac, ZodiacSchema } from '../app/schemas/zodiac.schemas';
+import { Zodiac, ZodiacSchema } from '../../app/schemas/zodiac.schemas';
 
 @Module({
   imports: [

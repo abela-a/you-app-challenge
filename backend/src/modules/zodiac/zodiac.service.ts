@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Zodiac } from '../app/schemas/zodiac.schemas';
+import { Zodiac } from '../../app/schemas/zodiac.schemas';
 import mongoose, { Model } from 'mongoose';
 import { CreateZodiacDto } from './dto/create-zodiac.dto';
 import { GetZodiacsDto } from './dto/get-zodiacs.dto';

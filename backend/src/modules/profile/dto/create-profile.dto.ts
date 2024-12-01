@@ -7,7 +7,7 @@ import {
   IsOptional,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Gender } from '../../app/enums/gender.enum';
+import { Gender } from '../../../app/enums/gender.enum';
 import { Transform, Type } from 'class-transformer';
 import * as zodiacs from '../../zodiac/zodiac.data.json';
 import * as horoscopes from '../../horoscope/horoscope.data.json';

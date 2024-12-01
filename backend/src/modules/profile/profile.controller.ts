@@ -20,7 +20,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   multerPhotosConfig,
   multerPhotosOptions,
-} from '../app/config/multer-photo.config';
+} from '../../app/config/multer-photo.config';
 @Controller('profiles')
 @UseGuards(JwtAuthGuard)
 @ApiSecurity('bearer')
