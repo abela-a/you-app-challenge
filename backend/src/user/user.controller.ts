@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -37,13 +38,30 @@ export class UserController {
   @ApiOperation({
     summary: 'Get Users',
     description: 'Get all users',
+    parameters: [
+      {
+        name: 'page',
+        in: 'query',
+        required: false,
+        description: 'Page number',
+      },
+      {
+        name: 'limit',
+        in: 'query',
+        required: false,
+        description: 'Number of users per page',
+      },
+    ],
     responses: {
       200: { description: 'The users have been successfully found' },
       401: { description: 'Unauthorized' },
     },
   })
-  async getUsers() {
-    return await this.userService.getUsers();
+  async getUsers(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ) {
+    return await this.userService.getUsers({ page, limit });
   }
 
   @Get(':id')

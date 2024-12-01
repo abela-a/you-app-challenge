@@ -10,6 +10,7 @@ import mongoose, { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RegisterDto } from '../auth/dto/register.dto';
+import { GetUsersDto } from './dto/get-users.dto';
 
 @Injectable()
 export class UserService {
@@ -34,8 +35,21 @@ export class UserService {
     return await user.save();
   }
 
-  async getUsers() {
-    return await this.userModel.find();
+  async getUsers(getUsersDto: GetUsersDto) {
+    const page = getUsersDto.page;
+    const limit = getUsersDto.limit;
+    const skip = (page - 1) * limit;
+
+    const users = await this.userModel.find().skip(skip).limit(limit);
+    const total = await this.userModel.countDocuments();
+
+    return {
+      data: users,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async getUserById(id: string) {
