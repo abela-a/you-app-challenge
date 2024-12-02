@@ -7,6 +7,7 @@ import { ProfileModule } from './modules/profile/profile.module';
 import { HoroscopeModule } from './modules/horoscope/horoscope.module';
 import { ZodiacModule } from './modules/zodiac/zodiac.module';
 import { MessageModule } from './modules/message/message.module';
+import { FriendshipModule } from './modules/friendship/friendship.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { MessageModule } from './modules/message/message.module';
     HoroscopeModule,
     ZodiacModule,
     MessageModule,
+    FriendshipModule,
   ],
   controllers: [],
   providers: [],
