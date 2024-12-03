@@ -8,6 +8,8 @@ import { HoroscopeModule } from './modules/horoscope/horoscope.module';
 import { ZodiacModule } from './modules/zodiac/zodiac.module';
 import { MessageModule } from './modules/message/message.module';
 import { FriendshipModule } from './modules/friendship/friendship.module';
+import { NotificationModule } from './modules/notification/notification.module';
+import { GatewayModule } from './gateway/gateway.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { FriendshipModule } from './modules/friendship/friendship.module';
     ZodiacModule,
     MessageModule,
     FriendshipModule,
+    NotificationModule,
+    GatewayModule,
   ],
   controllers: [],
   providers: [],
