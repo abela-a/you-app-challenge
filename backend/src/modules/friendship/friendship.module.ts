@@ -6,12 +6,14 @@ import {
   Friendship,
   FriendshipSchema,
 } from '../../app/schemas/friendship.schemas';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Friendship.name, schema: FriendshipSchema },
     ]),
+    NotificationModule,
   ],
   controllers: [FriendshipController],
   providers: [FriendshipService],

@@ -9,11 +9,13 @@ import mongoose, { Model } from 'mongoose';
 import { GetFriendshipsDto } from './dto/get-friendship.dto';
 import { FriendshipStatus } from '../../app/enums/friendship-status';
 import { CreateFriendshipDto } from './dto/create-friendship.dto';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class FriendshipService {
   constructor(
     @InjectModel(Friendship.name) private friendshipModel: Model<Friendship>,
+    private notificationService: NotificationService,
   ) {}
 
   async createFriendship(
@@ -28,11 +30,18 @@ export class FriendshipService {
       throw new BadRequestException('Friendship already exists');
     }
 
-    const friendship = new this.friendshipModel({
+    const friendshipStore = new this.friendshipModel({
       ...createFriendshipDto,
       initiator: userId,
     });
-    return await friendship.save();
+    const friendship = await friendshipStore.save();
+
+    this.notificationService.publishMessage(
+      'notification.friend_request',
+      friendship,
+    );
+
+    return friendship;
   }
 
   async getFriendshipByUserId(
@@ -73,10 +82,28 @@ export class FriendshipService {
     id: string | mongoose.Types.ObjectId,
     status: FriendshipStatus,
   ) {
-    return await this.friendshipModel.findByIdAndUpdate(
+    const friendship = await this.getFriendshipById(id);
+    if (friendship.status === status) {
+      throw new BadRequestException('Friendship already in this status');
+    }
+
+    if (!Object.values(FriendshipStatus).includes(status)) {
+      throw new BadRequestException('Invalid status');
+    }
+
+    const updatedFriendship = await this.friendshipModel.findByIdAndUpdate(
       id,
       { status },
       { new: true },
     );
+
+    if (status === FriendshipStatus.ACCEPTED) {
+      this.notificationService.publishMessage(
+        'notification.request_accepted',
+        updatedFriendship,
+      );
+    }
+
+    return updatedFriendship;
   }
 }
