@@ -11,9 +11,7 @@ export class GatewayService {
   ) {}
 
   async handleConnection(client: Socket, server: Server) {
-    const token = Array.isArray(client.handshake.query.token)
-      ? client.handshake.query.token[0]
-      : client.handshake.query.token;
+    const token = client.handshake.headers.authorization;
 
     if (!token) {
       server.emit('error', 'Unauthorized');
@@ -58,6 +56,8 @@ export class GatewayService {
 
   async verifyToken(token: string): Promise<any> {
     try {
+      token = token.replace('Bearer ', '');
+
       const payload = await this.jwtService.verify(token, {
         secret: process.env.JWT_SECRET,
       });
