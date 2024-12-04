@@ -38,22 +38,41 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
   async consumeMessage() {
     this.channel.consume('notification_queue', (msg) => {
       if (msg) {
-        const content = JSON.parse(msg.content.toString());
         let isSuccess = false;
+        let userId = null;
 
-        if (msg.fields.routingKey === 'notification.friend_request') {
-          const notification =
-            this.notificationGateway.sendFriendRequestNotification(content);
+        const content = JSON.parse(msg.content.toString());
+        const type = msg.fields.routingKey.replace('notification.', '');
 
-          isSuccess = notification.success;
+        const notification = {
+          message: '',
+          type: type,
+          data: content,
+        };
+
+        switch (type) {
+          case 'friend_request':
+            userId = content.recipient;
+            notification.message = 'You have a new friend request';
+            break;
+          case 'request_accepted':
+            userId = content.initiator;
+            notification.message = 'Your friend request has been accepted';
+            break;
+          case 'new_message':
+            userId = content.receiver;
+            notification.message = 'You have a new message';
+            break;
+          default:
+            notification.message = 'New notification';
+            break;
         }
 
-        if (msg.fields.routingKey === 'notification.request_accepted') {
-          const notification =
-            this.notificationGateway.sendRequestAcceptedNotification(content);
-
-          isSuccess = notification.success;
-        }
+        const emited = this.notificationGateway.emitNotification(
+          userId,
+          notification,
+        );
+        isSuccess = emited.success;
 
         if (isSuccess) {
           this.channel.ack(msg);
@@ -65,7 +84,7 @@ export class NotificationService implements OnModuleInit, OnModuleDestroy {
   }
 
   async publishMessage(routingKey: string, message: any) {
-    await this.channel.publish('notification', routingKey, message);
+    this.channel.publish('notification', routingKey, message);
   }
 
   async onModuleDestroy() {

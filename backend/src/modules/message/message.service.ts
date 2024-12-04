@@ -1,17 +1,43 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Message } from '../../app/schemas/message.schemas';
 import { SendMessageDto } from './dto/send-message.dto';
 import { EditMessageDto } from './dto/edit-message.dto';
 import { GetMessagesDto } from './dto/get-messages.dto';
+import { NotificationService } from '../notification/notification.service';
+import { Friendship } from '../../app/schemas/friendship.schemas';
 
 @Injectable()
 export class MessageService {
-  constructor(@InjectModel('Message') private messageModel: Model<Message>) {}
+  constructor(
+    @InjectModel(Friendship.name) private friendshipModel: Model<Friendship>,
+    @InjectModel(Message.name) private messageModel: Model<Message>,
+    private readonly notificationService: NotificationService,
+  ) {}
 
   async sendMessage(sendMessageDto: SendMessageDto) {
-    return new this.messageModel(sendMessageDto).save();
+    const checkFriendship = await this.friendshipModel.findOne({
+      $or: [
+        { initiator: sendMessageDto.sender },
+        { recipient: sendMessageDto.sender },
+      ],
+      status: 'accepted',
+    });
+
+    if (!checkFriendship) {
+      throw new BadRequestException('Friendship not found');
+    }
+
+    const messageStore = new this.messageModel(sendMessageDto);
+    const message = await messageStore.save();
+
+    this.notificationService.publishMessage(
+      'notification.new_message',
+      message,
+    );
+
+    return message;
   }
 
   async getMessages(params: GetMessagesDto) {

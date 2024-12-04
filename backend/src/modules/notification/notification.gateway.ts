@@ -7,6 +7,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { Friendship } from '../../app/schemas/friendship.schemas';
 import { GatewayService } from '../../gateway/gateway.service';
+import { Message } from '../../app/schemas/message.schemas';
 
 const PORT = parseInt(process.env.SOCKET_PORT) || 3000;
 
@@ -37,33 +38,11 @@ export class NotificationGateway
     client.leave(`notification.${userId}`);
   }
 
-  sendFriendRequestNotification(friendship: Friendship) {
-    const notification = {
-      message: 'You have a new friend request',
-      data: friendship,
-    };
-
+  emitNotification(userId: string, notification: any) {
     try {
       this.server
-        .to(`notification.${friendship.recipient}`)
-        .emit('friendship.notification.friend-request', notification);
-
-      return { success: true };
-    } catch (error) {
-      return { success: false, error };
-    }
-  }
-
-  sendRequestAcceptedNotification(friendship: Friendship) {
-    const notification = {
-      message: 'Your friend request has been accepted',
-      data: friendship,
-    };
-
-    try {
-      this.server
-        .to(`notification.${friendship.initiator}`)
-        .emit('friendship.notification.request-accepted', notification);
+        .to(`notification.${userId}`)
+        .emit('notification', notification);
 
       return { success: true };
     } catch (error) {
