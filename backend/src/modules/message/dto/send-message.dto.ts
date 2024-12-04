@@ -1,9 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsMongoId, IsNotEmpty, IsString } from 'class-validator';
+import { IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class SendMessageDto {
-  @IsMongoId()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({
     required: false,
     example: '',
@@ -11,7 +10,7 @@ export class SendMessageDto {
     description: 'The sender of the message',
     nullable: true,
   })
-  sender: string;
+  sender?: string;
 
   @IsMongoId()
   @IsNotEmpty()

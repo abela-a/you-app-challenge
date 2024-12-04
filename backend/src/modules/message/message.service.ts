@@ -33,7 +33,9 @@ export class MessageService {
   }
 
   async editMessage(messageId: string, editMessageDto: EditMessageDto) {
-    return this.messageModel.findByIdAndUpdate(messageId, editMessageDto);
+    return this.messageModel.findByIdAndUpdate(messageId, editMessageDto, {
+      new: true,
+    });
   }
 
   async deleteMessage(messageId: string) {
