@@ -1,15 +1,14 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
-import { User } from './user.schemas';
 import { Transform } from 'class-transformer';
 
 @Schema()
 export class Message {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  sender: User;
+  sender: string;
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  receiver: User;
+  receiver: string;
 
   @Prop({ required: true })
   @Transform(({ value }) => value.toString().trim())

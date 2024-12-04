@@ -58,6 +58,13 @@ export class MessageService {
     return this.messageModel.findByIdAndUpdate(messageId, { isRead: true });
   }
 
+  async markAllAsRead(receiver: string) {
+    return this.messageModel.updateMany(
+      { receiver, isRead: false },
+      { isRead: true },
+    );
+  }
+
   async editMessage(messageId: string, editMessageDto: EditMessageDto) {
     return this.messageModel.findByIdAndUpdate(messageId, editMessageDto, {
       new: true,

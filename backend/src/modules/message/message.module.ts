@@ -8,6 +8,8 @@ import {
   Friendship,
   FriendshipSchema,
 } from '../../app/schemas/friendship.schemas';
+import { MessageGateway } from './message.gateway';
+import { GatewayModule } from '../../gateway/gateway.module';
 
 @Module({
   imports: [
@@ -16,8 +18,9 @@ import {
       { name: Friendship.name, schema: FriendshipSchema },
     ]),
     NotificationModule,
+    GatewayModule,
   ],
-  providers: [MessageService],
+  providers: [MessageService, MessageGateway],
   exports: [MessageService],
   controllers: [MessageController],
 })

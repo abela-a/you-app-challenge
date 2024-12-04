@@ -5,13 +5,11 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { Friendship } from '../../app/schemas/friendship.schemas';
 import { GatewayService } from '../../gateway/gateway.service';
-import { Message } from '../../app/schemas/message.schemas';
 
 const PORT = parseInt(process.env.SOCKET_PORT) || 3000;
 
-@WebSocketGateway(PORT, { namespace: 'notification', cors: '*' })
+@WebSocketGateway(PORT, { cors: '*' })
 export class NotificationGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
@@ -19,9 +17,7 @@ export class NotificationGateway
 
   @WebSocketServer() server: Server;
 
-  afterInit() {
-    console.info(`Gateway - Notification initialized on ${PORT}/notification`);
-  }
+  afterInit() {}
 
   async handleConnection(client: Socket) {
     const userId = await this.gatewayService.handleConnection(
